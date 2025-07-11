@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router'; // 1. Importar
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { chatService } from '../../services/';
+import { chatService } from '../../services/chatService';
 import { colors } from '../../theme/colors';
 
 // O router é passado como prop para o item da lista
