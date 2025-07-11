@@ -1,34 +1,40 @@
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { ActivityIndicator, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, TextInput, View } from 'react-native';
 import { colors } from '../theme/colors';
 
-const PrimaryButton = ({ title, onPress, style, textStyle, color = 'primary', disabled = false }) => (
-  <TouchableOpacity
-    style={[styles.button, { backgroundColor: colors[color] }, style, disabled && styles.disabled]}
-    onPress={onPress}
-    disabled={disabled}
-  >
-    {disabled ? <ActivityIndicator color={colors.text} /> : <Text style={[styles.text, textStyle]}>{title}</Text>}
-  </TouchableOpacity>
+const AuthInput = ({ icon, ...props }) => (
+  <View style={styles.container}>
+    {icon && <Ionicons name={icon} size={20} color={colors.placeholder} style={styles.icon} />}
+    <TextInput
+      style={styles.input}
+      placeholderTextColor={colors.placeholder}
+      {...props}
+    />
+  </View>
 );
 
 const styles = StyleSheet.create({
-  button: {
-    width: '100%',
-    paddingVertical: 15,
-    borderRadius: 8,
+  container: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: colors.text,
+    borderRadius: 8,
+    width: '100%',
+    paddingHorizontal: 15,
     marginVertical: 10,
+    borderColor: colors.border,
+    borderWidth: 1,
   },
-  text: {
-    color: colors.text,
+  icon: {
+    marginRight: 10,
+  },
+  input: {
+    flex: 1,
+    height: 50,
+    color: colors.textSecondary,
     fontSize: 16,
-    fontWeight: 'bold',
-  },
-  disabled: {
-    backgroundColor: '#cccccc',
   },
 });
 
-export default PrimaryButton;
+export default AuthInput;
