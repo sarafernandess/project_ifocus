@@ -4,7 +4,7 @@ export const darkColors = {
     primary: '#10c295',
     green: '#21c35e',
     orange: '#f3a826',
-    secondary: '#FF5252',
+    secondary: '#ee2a2b',
     text: '#FFFFFF',
     textSecondary: 'hsl(215 20% 65%)',
     border: 'hsl(217 32% 15%)',
