@@ -1,37 +1,90 @@
-import { MOCK_USER } from '../data/mockData';
-import { notifications } from './notificationService';
+// services/authService.js
+import {
+  createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword,
+  signOut,
+  updateProfile
+} from 'firebase/auth';
+import apiClient from './apiClient';
+import { auth } from './firebaseConfig';
 
-let isLoggedIn = false;
+const INSTITUTIONAL_EMAIL_REGEX = /.+@.+\.edu\.br$/;
 
+// ---- helpers de auth ----
+let _authReadyPromise;
+function waitForAuthReady() {
+  if (_authReadyPromise) return _authReadyPromise;
+  _authReadyPromise = new Promise((resolve) => {
+    const unsub = onAuthStateChanged(auth, () => {
+      unsub();
+      resolve(auth.currentUser || null);
+    });
+  });
+  return _authReadyPromise;
+}
+
+async function getIdToken({ forceRefresh = false } = {}) {
+  const user = auth.currentUser;
+  if (!user) return null;
+  try {
+    return await user.getIdToken(forceRefresh);
+  } catch {
+    return null;
+  }
+}
+
+function getCurrentUser() {
+  return auth.currentUser || null;
+}
+
+function onAuthChanged(cb) {
+  return onAuthStateChanged(auth, cb);
+}
+
+// ⚠️ EXPORT **NOMEADO**: { authService }
 export const authService = {
-  login: async (email, password) => {
-    // TODO: Substituir pela chamada de API real para /login
-    console.log(`Tentando login com ${email}`);
-    if (email && password) {
-      isLoggedIn = true;
-      notifications.notifyLoginSuccess();
-      return Promise.resolve({ success: true, user: MOCK_USER });
+  waitForAuthReady,
+  getIdToken,
+  getCurrentUser,
+  onAuthChanged,
+
+  async register(name, email, password) {
+    if (!INSTITUTIONAL_EMAIL_REGEX.test(email)) {
+      return { success: false, error: 'Por favor, use um e-mail institucional válido (final .edu.br)' };
     }
-    return Promise.resolve({ success: false, error: 'Credenciais inválidas.' });
-  },
+    try {
+      const { user } = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(user, { displayName: name });
 
-  register: async (name, email, password) => {
-    // TODO: Substituir pela chamada de API real para /register
-    console.log(`Registrando ${name}`);
-    if (name && email && password) {
-        isLoggedIn = true;
-        return Promise.resolve({ success: true, user: MOCK_USER });
+      await waitForAuthReady(); // importante no web
+      const token = await user.getIdToken(true);
+      await apiClient.post('/user/create', { name }, { headers: { Authorization: `Bearer ${token}` } });
+
+      return { success: true, user };
+    } catch (error) {
+      console.error('Erro no registro:', error);
+      return { success: false, error: error?.message || 'Falha no registro' };
     }
-    return Promise.resolve({ success: false, error: 'Dados de registro inválidos.' });
   },
 
-  logout: async () => {
-    // TODO: Substituir pela chamada de API real para /logout
-    isLoggedIn = false;
-    return Promise.resolve({ success: true });
+  async login(email, password) {
+    try {
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      await waitForAuthReady();
+      await cred.user.getIdToken(false);
+      return { success: true, user: cred.user };
+    } catch (error) {
+      console.error('Erro no login:', error);
+      return { success: false, error: error?.message || 'Falha no login' };
+    }
   },
 
-  checkAuthStatus: async () => {
-    return Promise.resolve({ isAuthenticated: isLoggedIn });
+  async logout() {
+    try {
+      await signOut(auth);
+      return { success: true };
+    } catch (error) {
+      console.error('Erro no logout:', error);
+      return { success: false, error: error?.message || 'Falha ao sair' };
+    }
   },
 };
