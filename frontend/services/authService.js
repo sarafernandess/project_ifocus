@@ -1,4 +1,3 @@
-// services/authService.js
 import {
   createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword,
   signOut,
@@ -9,7 +8,6 @@ import { auth } from './firebaseConfig';
 
 const INSTITUTIONAL_EMAIL_REGEX = /.+@.+\.edu\.br$/;
 
-// ---- helpers de auth ----
 let _authReadyPromise;
 function waitForAuthReady() {
   if (_authReadyPromise) return _authReadyPromise;
@@ -40,7 +38,6 @@ function onAuthChanged(cb) {
   return onAuthStateChanged(auth, cb);
 }
 
-// ⚠️ EXPORT **NOMEADO**: { authService }
 export const authService = {
   waitForAuthReady,
   getIdToken,
@@ -55,7 +52,7 @@ export const authService = {
       const { user } = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(user, { displayName: name });
 
-      await waitForAuthReady(); // importante no web
+      await waitForAuthReady();
       const token = await user.getIdToken(true);
       await apiClient.post('/user/create', { name }, { headers: { Authorization: `Bearer ${token}` } });
 
