@@ -6,29 +6,29 @@ import { userService } from '../../services/userService';
 import { colors } from '../../theme/colors';
 
 // Dados mockados para as atividades recentes
-const recentActivities = [
-    {
-        id: '1',
-        icon1: 'chatbubble-ellipses-outline',
-        title: 'Nova mensagem de Maria Santos',
-        subtitle: 'Sobre dúvidas em Cálculo I',
-        time: '2 min atrás'
-    },
-    {
-        id: '2',
-        icon2: 'people-outline',
-        title: 'Alguém precisa de ajuda em Física',
-        subtitle: 'Movimento uniformemente variado',
-        time: '15 min atrás'
-    },
-    {
-        id: '3',
-        icon3: 'book-outline',
-        title: 'Grupo de estudos criado',
-        subtitle: 'Preparação para prova de Química',
-        time: '1 hora atrás'
-    }
-];
+// const recentActivities = [
+//     {
+//         id: '1',
+//         icon1: 'chatbubble-ellipses-outline',
+//         title: 'Nova mensagem de Maria Santos',
+//         subtitle: 'Sobre dúvidas em Cálculo I',
+//         time: '2 min atrás'
+//     },
+//     {
+//         id: '2',
+//         icon2: 'people-outline',
+//         title: 'Alguém precisa de ajuda em Física',
+//         subtitle: 'Movimento uniformemente variado',
+//         time: '15 min atrás'
+//     },
+//     {
+//         id: '3',
+//         icon3: 'book-outline',
+//         title: 'Grupo de estudos criado',
+//         subtitle: 'Preparação para prova de Química',
+//         time: '1 hora atrás'
+//     }
+// ];
 
 export default function HomeScreen() {
     const router = useRouter();
@@ -66,9 +66,9 @@ export default function HomeScreen() {
                     <Text style={styles.cardSubtitle}>Disciplinas em que você está disposto a ajudar outros estudantes</Text>
                 </View>
                 <View style={styles.containerColumn}>
-                    {user?.subjects && user.subjects.length > 0 ? (
+                    {user?.helping_subjects && user.helping_subjects.length > 0 ? (
                         <View style={styles.subjectsContainer}>
-                            {user.subjects.map(subject => (
+                            {user.helping_subjects.map(subject => (
                                 <View key={subject} style={styles.subjectBadge}>
                                     <Text style={styles.subjectBadgeText}>{subject}</Text>
                                 </View>
@@ -102,14 +102,14 @@ export default function HomeScreen() {
                 <Text style={styles.cardSubtitle}>Conecte-se com colegas</Text>
             </TouchableOpacity>
 
-            {/* Card 3: Atividades Recentes (NOVO) */}
+            {/* Card 3: Atividades Recentes */}
             <View style={styles.card}>
                 <View style={styles.cardHeader}>
                     <Text style={styles.cardTitle3}>Atividades Recentes</Text>
                 </View>
-                <Text style={styles.cardSubtitle}>Suas últimas interações e notificações</Text>
-                
-                <View style={styles.activitiesContainer}>
+                <Text style={styles.cardSubtitle}>Sem atividades recentes</Text>
+
+                {/* <View style={styles.activitiesContainer}>
                     {recentActivities.map((activity, index) => (
                         <View key={activity.id} style={[
                             styles.activityItem,
@@ -127,11 +127,41 @@ export default function HomeScreen() {
                             </View>
                         </View>
                     ))}
-                </View>
+                </View> */}
             </View>
         </ScrollView>
     );
 }
+
+const SP = { xs: 4, sm: 8, md: 12, lg: 16, xl: 20 };
+const RAD = { sm: 8, md: 12, pill: 9999 };
+const BW = 1;
+
+const baseCard = {
+    width: '100%',
+    backgroundColor: colors.surface,
+    borderRadius: RAD.md,
+    padding: SP.xl,
+    marginBottom: SP.xl,
+    borderWidth: BW,
+    borderColor: colors.border,
+};
+
+const baseTitle = {
+    color: colors.text,
+    fontWeight: 'bold',
+};
+
+const baseSubtitle = {
+    color: colors.textSecondary,
+    marginTop: SP.xs,
+    fontSize: 14,
+};
+
+const baseCenter = {
+    justifyContent: 'center',
+    alignItems: 'center',
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -140,48 +170,37 @@ const styles = StyleSheet.create({
     },
     contentContainer: {
         alignItems: 'center',
-        padding: 20,
-        width: '100%'
+        padding: SP.xl,
+        width: '100%',
     },
     centered: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
         backgroundColor: colors.background,
+        ...baseCenter,
     },
+
     greeting: {
+        ...baseTitle,
         fontSize: 28,
-        fontWeight: 'bold',
-        color: colors.text,
-        width: '100%', // Garante que o texto ocupe a largura
+        width: '100%',
     },
     welcome: {
         fontSize: 16,
         color: colors.textSecondary,
-        marginBottom: 20,
-        width: '100%', // Garante que o texto ocupe a largura
-    },
-    card: {
+        marginBottom: SP.xl,
         width: '100%',
-        backgroundColor: colors.surface,
-        borderRadius: 12,
-        padding: 20,
-        marginBottom: 20,
-        borderWidth: 1,
-        borderColor: colors.border,
+    },
+
+    card: {
+        ...baseCard,
     },
     card2: {
+        ...baseCard,
         width: '98%',
-        backgroundColor: colors.surface,
-        borderRadius: 12,
-        padding: 20,
-        marginBottom: 20,
-        borderWidth: 1,
-        borderColor: colors.border,
         alignItems: 'center',
     },
     cardFlexColumn: {
-        marginBottom: 10,
+        marginBottom: SP.md,
     },
     cardHeader: {
         flexDirection: 'row',
@@ -192,63 +211,61 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     cardTitle: {
+        ...baseTitle,
         fontSize: 23,
-        fontWeight: 'bold',
-        color: colors.text,
-        marginLeft: 10,
+        marginLeft: SP.sm,
     },
     cardTitle2: {
+        ...baseTitle,
         fontSize: 16,
-        fontWeight: 'bold',
-        color: colors.text,
-        marginTop: 5,
+        marginTop: SP.xs,
     },
     cardTitle3: {
+        ...baseTitle,
         fontSize: 23,
-        fontWeight: 'bold',
-        color: colors.text,
     },
     cardSubtitle: {
-        fontSize: 14,
-        marginTop: 4,
-        color: colors.textSecondary,
+        ...baseSubtitle,
     },
+
+    // Seção de disciplinas
     containerColumn: {
-        marginTop: 15,
+        marginTop: SP.md,
     },
     noSubjectsText: {
         color: colors.textSecondary,
         textAlign: 'center',
-        marginVertical: 20,
+        marginVertical: SP.lg,
     },
     addButton: {
         flexDirection: 'row',
         backgroundColor: colors.primary,
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 8,
+        paddingVertical: SP.sm + 2,
+        paddingHorizontal: SP.lg + 4,
+        borderRadius: RAD.sm,
         alignSelf: 'center',
         alignItems: 'center',
     },
     addButtonText: {
         color: colors.text,
         fontWeight: 'bold',
-        marginLeft: 5,
+        marginLeft: SP.xs + 1,
     },
+
     subjectsContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
         alignItems: 'center',
     },
     subjectBadge: {
-        borderRadius: 9999,
-        borderColor: colors.border_primary, 
+        borderRadius: RAD.pill,
+        borderColor: colors.border_primary,
         backgroundColor: colors.primary_transparent,
-        borderWidth: 1,
-        paddingVertical: 4,
-        paddingHorizontal: 6,
-        marginRight: 8,
-        marginBottom: 8,
+        borderWidth: BW,
+        paddingVertical: SP.xs,
+        paddingHorizontal: SP.sm,
+        marginRight: SP.sm,
+        marginBottom: SP.sm,
     },
     subjectBadgeText: {
         color: colors.primary,
@@ -257,28 +274,31 @@ const styles = StyleSheet.create({
     },
     containerButton: {
         width: '100%',
-        marginTop: 15,
+        marginTop: SP.md + 3,
         alignItems: 'center',
     },
     manageLink: {
         color: colors.text,
         fontWeight: '500',
     },
-    // Estilos para o novo card de atividades
+
+    // Atividades
     activitiesContainer: {
-        marginTop: 20,
+        marginTop: SP.xl,
     },
     activityItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: 15,
+        paddingVertical: SP.lg - 1,
     },
     activityItemBorder: {
-        borderBottomWidth: 1,
+        borderBottomWidth: BW,
         borderBottomColor: colors.border,
     },
     activityIconContainer: {
-        marginRight: 15,
+        flexDirection: 'row',
+        gap: SP.sm,
+        marginRight: SP.md,
     },
     activityTextContainer: {
         flex: 1,
@@ -287,7 +307,7 @@ const styles = StyleSheet.create({
         color: colors.text,
         fontSize: 15,
         fontWeight: '500',
-        marginBottom: 2,
+        marginBottom: SP.xs,
     },
     activitySubtitle: {
         color: colors.textSecondary,
@@ -296,6 +316,6 @@ const styles = StyleSheet.create({
     activityTime: {
         color: colors.textSecondary,
         fontSize: 12,
-        marginTop: 4,
+        marginTop: SP.xs,
     },
 });
