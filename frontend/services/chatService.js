@@ -1,21 +1,43 @@
-import { MOCK_CHATS_LIST, MOCK_CHAT_HISTORY } from '../data/mockData';
-import { notifications } from './notificationService';
+// services/chatService.js
+import apiClient from './apiClient';
 
-export const chatService = {
-  getChatsList: async () => {
-    // TODO: Substituir pela chamada de API real para /chats
-    return Promise.resolve(MOCK_CHATS_LIST);
+const chatService = {
+  async createOrGetChat(otherUserId) {
+    // IMPORTANTE: o backend espera exatamente { other_user_id: ... }
+    const { data } = await apiClient.post('/chat/create', { other_user_id: String(otherUserId) });
+    return data; // chatId (string)
   },
 
-  getChatHistory: async (chatId) => {
-    // TODO: Substituir pela chamada de API real para /chats/{chatId}/messages
-    return Promise.resolve(MOCK_CHAT_HISTORY[chatId] || []);
+  listConversations: async (userId) => {
+    const { data } = await apiClient.get(`/chat/user/${userId}`);
+    return data;
   },
 
-  sendMessage: async (chatId, message) => {
-    // TODO: Substituir pela chamada de API real para POST /chats/{chatId}/messages
-    const newMessage = { ...message, id: Date.now().toString() };
-    notifications.notifyNewMessage(newMessage);
-    return Promise.resolve({ success: true, message: newMessage });
-  }
+  getChatsList: async (userId) => chatService.listConversations(userId),
+
+  getMessages: async (chatId, { limit = 20, before } = {}) => {
+    const params = { limit };
+    if (before) params.before = before;
+    const { data } = await apiClient.get(`/chat/messages/${chatId}`, { params });
+    return data;
+  },
+
+  sendMessage: async ({ chatId, receiverId, text, file }) => {
+    const form = new FormData();
+    form.append('receiver_id', String(receiverId));
+    if (text) form.append('text', text);
+    if (file) {
+      form.append('file', {
+        uri: file.uri,
+        name: file.name || 'upload',
+        type: file.type || 'application/octet-stream',
+      });
+    }
+    const { data } = await apiClient.post(`/chat/send/${chatId}`, form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return data;
+  },
 };
+
+export default chatService;
