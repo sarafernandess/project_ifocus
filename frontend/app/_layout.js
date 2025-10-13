@@ -1,23 +1,77 @@
-// app/_layout.js
-import { Stack } from 'expo-router';
+import { SplashScreen, Stack, useRouter, useSegments } from 'expo-router';
+import { onAuthStateChanged } from 'firebase/auth';
+import React, { useEffect, useState } from 'react';
+import { auth } from '../services/firebaseConfig';
 import { darkColors as colors } from '../theme/colors';
 
-// Este é o navegador principal. Ele decide se mostra as telas de auth ou as telas de abas.
+SplashScreen.preventAutoHideAsync();
+
 export default function RootLayout() {
+  const [user, setUser] = useState(null);
+  const [isAuthInitialized, setAuthInitialized] = useState(false);
+  const router = useRouter();
+  const segments = useSegments();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
+      setAuthInitialized(true);
+    });
+    
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isAuthInitialized) {
+      return;
+    }
+
+    const inAuthGroup = segments[0] === '(auth)';
+
+    if (user && inAuthGroup) {
+      router.replace('/(tabs)');
+    } else if (!user && !inAuthGroup) {
+      router.replace('/(auth)/login');
+    } else {
+      SplashScreen.hideAsync();
+    }
+  }, [user, segments, router, isAuthInitialized]);
+
+
+  if (!isAuthInitialized) {
+    return null;
+  }
+
+  
   return (
     <Stack
       screenOptions={{
-        headerStyle: { backgroundColor: colors.surface, },
-        headerTintColor: colors.text,
+        headerShown: false,
         contentStyle: { backgroundColor: colors.background }
       }}
     >
-      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="chat" options={{ title: 'Chat' }} />
+      <Stack.Screen name="(auth)" />
+      <Stack.Screen name="(tabs)" />
+      <Stack.Screen
+        name="chat"
+        options={{
+          title: 'Chat',
+          headerShown: true,
+          headerStyle: { backgroundColor: colors.surface },
+          headerTintColor: colors.text,
+        }}
+      />
       <Stack.Screen
         name="select-subjects"
-        options={{ title: 'Selecionar Disciplinas', presentation: 'modal' }}
+        options={{
+          title: 'Selecionar Disciplinas',
+          presentation: 'modal',
+          headerShown: true,
+          headerStyle: { backgroundColor: colors.surface },
+          headerTintColor: colors.text,
+        }}
       />
     </Stack>
   );
