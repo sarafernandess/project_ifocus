@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router'; // 1. Importar
+import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import PrimaryButton from '../components/PrimaryButton';
@@ -7,25 +7,25 @@ import { userService } from '../services/userService';
 import { colors } from '../theme/colors';
 
 export default function SelectSubjectsScreen() {
-    const router = useRouter(); // 2. Inicializar
+    const router = useRouter();
     const [allSubjects, setAllSubjects] = useState([]);
     const [selectedSubjects, setSelectedSubjects] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
-            try {
-                const [subjectsData, userData] = await Promise.all([
-                    userService.getAllSubjects(),
-                    userService.getUserProfile(),
-                ]);
-                setAllSubjects(subjectsData);
-                setSelectedSubjects(userData.subjects || []);
-            } catch (error) {
-                Alert.alert('Erro', 'Não foi possível carregar as disciplinas.');
-            } finally {
-                setLoading(false);
-            }
+        try {
+            const [subjectsData, userData] = await Promise.all([
+            userService.getAllSubjects(),
+            userService.getUserProfile(),
+            ]);
+            setAllSubjects(subjectsData);
+            setSelectedSubjects(Array.isArray(userData?.helping_subjects) ? userData.helping_subjects : []);
+        } catch (error) {
+            Alert.alert('Erro', 'Não foi possível carregar as disciplinas.');
+        } finally {
+            setLoading(false);
+        }
         };
         fetchData();
     }, []);
@@ -37,19 +37,18 @@ export default function SelectSubjectsScreen() {
     };
 
     const handleSaveChanges = async () => {
-        setLoading(true);
-        const response = await userService.updateUserSubjects(selectedSubjects);
-        setLoading(false);
-        if (response.success) {
+        try {
+            setLoading(true);
+            await userService.updateUserSubjects(selectedSubjects);
             Alert.alert('Sucesso', 'Suas disciplinas foram atualizadas.');
-            // 3. Voltar para a tela anterior
-            if (router.canGoBack()) {
-                router.back();
-            }
-        } else {
+            if (router.canGoBack()) router.back();
+        } catch (e) {
             Alert.alert('Erro', 'Não foi possível salvar as alterações.');
+        } finally {
+            setLoading(false);
         }
     };
+
 
     if (loading && allSubjects.length === 0) {
         return <View style={styles.centered}><ActivityIndicator size="large" color={colors.primary} /></View>;
@@ -77,7 +76,6 @@ export default function SelectSubjectsScreen() {
         </View>
     );
 };
-// ... (estilos permanecem os mesmos)
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background, paddingHorizontal: 20 },
     centered: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.background },
