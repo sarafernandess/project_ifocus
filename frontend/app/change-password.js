@@ -1,4 +1,4 @@
-import { Stack, useRouter } from 'expo-router'; // 1. Importar
+import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
 import AuthInput from '../components/AuthInput';
@@ -7,7 +7,7 @@ import { userService } from '../services/userService';
 import { colors } from '../theme/colors';
 
 export default function ChangePasswordScreen() {
-    const router = useRouter(); // 2. Inicializar
+    const router = useRouter();
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -25,7 +25,7 @@ export default function ChangePasswordScreen() {
         const response = await userService.updatePassword(newPassword);
         setLoading(false);
         if (response.success) {
-            Alert.alert('Sucesso', 'Sua senha foi alterada.', [{ text: 'OK', onPress: () => router.back() }]); // 3. Voltar
+            Alert.alert('Sucesso', 'Sua senha foi alterada.', [{ text: 'OK', onPress: () => router.back() }]);
         } else {
             Alert.alert('Erro', 'Não foi possível alterar a senha.');
         }
@@ -33,7 +33,6 @@ export default function ChangePasswordScreen() {
 
     return (
         <>
-            {/* 4. Definir o título do cabeçalho para esta rota específica */}
             <Stack.Screen options={{ title: "Alterar Senha" }} />
             <View style={styles.container}>
                 <Text style={styles.label}>Nova Senha</Text>
@@ -55,7 +54,6 @@ export default function ChangePasswordScreen() {
         </>
     );
 };
-// ... (estilos permanecem os mesmos)
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background, padding: 20 },
     label: { color: colors.textSecondary, fontSize: 14, marginBottom: 5, marginTop: 10 },
