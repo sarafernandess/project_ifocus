@@ -1,7 +1,6 @@
 
 const showNotification = (title, body) => {
   console.log(`[NOTIFICAÇÃO] ${title}: ${body}`);
-  // Alert.alert(title, body); // Descomente para ver alertas visuais no app
 };
 
 export const notifications = {
