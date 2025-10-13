@@ -3,7 +3,6 @@ import * as yup from 'yup';
 // Expressão regular para validar e-mails .edu.br
 const INSTITUTIONAL_EMAIL_REGEX = /.+@.+\.edu\.br$/;
 
-// Esquema de validação para a tela de registro (já existente)
 export const registerSchema = yup.object().shape({
   name: yup
     .string()
@@ -22,8 +21,6 @@ export const registerSchema = yup.object().shape({
     .required('A senha é obrigatória'),
 });
 
-
-// --- NOVO ESQUEMA DE LOGIN ABAIXO ---
 export const loginSchema = yup.object().shape({
   email: yup
     .string()
