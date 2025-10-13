@@ -1,4 +1,3 @@
-# app/repository/user_repository.py
 from typing import Any, Dict, List, Optional
 from app.firebase.firestore_client import db
 
@@ -30,6 +29,5 @@ def list_helpers_by_subject(subject: str) -> List[Dict[str, Any]]:
             "email": u.get("email"),
             "avatarUrl": u.get("avatarUrl"),
             "helping_subjects": u.get("helping_subjects", []),
-            # "helps": u.get("helps")  # se você adicionar no futuro
         })
     return out
