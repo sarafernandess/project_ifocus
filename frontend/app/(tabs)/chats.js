@@ -10,7 +10,6 @@ import { colors } from '../../theme/colors';
 const formatTime = (ms) => {
   if (!ms) return '—';
   const d = new Date(ms);
-  // mostra só hora:min; ajuste se quiser data quando for outro dia
   return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 };
 
@@ -63,16 +62,11 @@ export default function ChatsListScreen() {
     const participants = Array.isArray(c.participants) ? c.participants.map(String) : [];
     const otherUserId = participants.find(p => p !== String(uid)) || '';
 
-    // aceita snake e camel
     const rawLast = c.last_message ?? c.lastMessage ?? '';
     const rawUpdated = c.updated_at ?? c.updatedAt ?? null;
 
-    // 1) Mapeia para rótulo amigável
     let preview = presentLastMessage(rawLast);
 
-    // 2) Fallback local:
-    // se não veio last_message mas existe updated_at (ou seja, já houve atividade),
-    // mostramos "Mensagem" para não aparecer "Sem mensagens ainda".
     if (!preview && rawUpdated) {
       preview = 'Mensagem';
     }
@@ -80,7 +74,7 @@ export default function ChatsListScreen() {
     return {
       id: String(c.id),
       otherUserId,
-      userName: otherUserId,   // enriquecemos depois com o nome real
+      userName: otherUserId,
       avatarUrl: null,
       lastMessage: preview,
       last_sender: c.last_sender ?? c.lastSender ?? null,
@@ -105,7 +99,6 @@ export default function ChatsListScreen() {
     try {
       const data = await chatService.listConversations(uid);
       const arr = Array.isArray(data) ? data : [];
-      // caso o backend ainda não ordene, garantimos aqui
       arr.sort((a, b) => ((b.updated_at ?? b.updatedAt ?? 0) - (a.updated_at ?? a.updatedAt ?? 0)));
       const base = arr.map(mapServerChatToUI);
       const enriched = await enrichWithProfiles(base);

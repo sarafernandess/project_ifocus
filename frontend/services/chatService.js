@@ -1,11 +1,9 @@
-// services/chatService.js
 import apiClient from './apiClient';
 
 const chatService = {
   async createOrGetChat(otherUserId) {
-    // IMPORTANTE: o backend espera exatamente { other_user_id: ... }
     const { data } = await apiClient.post('/chat/create', { other_user_id: String(otherUserId) });
-    return data; // chatId (string)
+    return data;
   },
 
   listConversations: async (userId) => {
