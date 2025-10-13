@@ -1,0 +1,20 @@
+# Ambiente virtual
+venv/
+
+# Arquivos de ambiente
+.env
+*.env
+
+# Pycache e arquivos compilados
+__pycache__/
+*.py[cod]
+
+# Arquivos temporários
+*.log
+*.tmp
+
+# VSCode e IDEs
+.vscode/
+.idea
+app/firebase/firebase_key.json
+
